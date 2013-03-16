@@ -1,4 +1,7 @@
+CMAKE_MINIMUM_REQUIRED(VERSION 2.6.2 FATAL_ERROR)
 SET(LIB_NAME ForceSensor)
+SET(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR})
+MESSAGE(STATUS ${CMAKE_MODULE_PATH})
 
 # OpenRave
 find_package(OpenRAVE REQUIRED)
@@ -11,15 +14,14 @@ if( CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX )
   add_definitions("-fno-strict-aliasing -Wall")
 endif( CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX )
 
-if( MSVC )
-  # have to include the module definition file
-  set(PLUGIN_LINK_FLAGS "/DEF:\"${CMAKE_CURRENT_SOURCE_DIR}/openraveplugin.def\"")
-elseif(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
+if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
   set(PLUGIN_LINK_FLAGS "")
 endif()
 
-include_directories(${OpenRAVE_INCLUDE_DIRS} ${CMAKE_CURRENT_SOURCE_DIR} "${CMAKE_CURRENT_SOURCE_DIR}/../include")
+message(STATUS "OPENRAVE_LINK_DIRS  ${OpenRAVE_LINK_DIRS}")
+include_directories(${OpenRAVE_INCLUDE_DIRS} ${CMAKE_CURRENT_SOURCE_DIR})
 link_directories(${OpenRAVE_LINK_DIRS})
+link_directories(${Boost_LIBRARY_DIRS}) 
 
 add_library(${LIB_NAME} SHARED  ForceSensorMain.cpp
 								ForceSensor.cpp
@@ -28,11 +30,7 @@ add_library(${LIB_NAME} SHARED  ForceSensorMain.cpp
 set_target_properties(${LIB_NAME} PROPERTIES COMPILE_FLAGS "${OpenRAVE_CXXFLAGS}")
 set_target_properties(${LIB_NAME} PROPERTIES LINK_FLAGS "${OpenRAVE_LINK_FLAGS} ${PLUGIN_LINK_FLAGS}")
 
-if( MSVC )
-	target_link_libraries(${LIB_NAME} ${OpenRAVE_LIBRARY} libxml2)
-else()
-	target_link_libraries(${LIB_NAME} ${OpenRAVE_LIBRARY})
-endif()
+target_link_libraries(${LIB_NAME} ${OpenRAVE_LIBRARY})
 
 if( NOT DEFINED ENV{PLUGIN_INSTALL_DIR} )
     set(PLUGIN_INSTALL_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../plugins")
