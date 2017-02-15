@@ -160,14 +160,14 @@ bool ForceSensor::SimulationStep(OpenRAVE::dReal fTimeElapsed){
     
 };
 
-SensorBase::SensorGeometryPtr ForceSensor::GetSensorGeometry(SensorType type){
+SensorBase::SensorGeometryConstPtr ForceSensor::GetSensorGeometry(SensorType type){
     if( type == ST_Invalid || type == ST_Force6D ) {
 
         ForceSensorGeomData* pgeom = new ForceSensorGeomData();
         *pgeom = *_geom;
-        return SensorGeometryPtr(pgeom);
+        return SensorGeometryConstPtr(pgeom);
     }
-    return SensorGeometryPtr();
+    return SensorGeometryConstPtr();
 };
 
 SensorBase::SensorDataPtr ForceSensor::CreateSensorData(SensorType type){
